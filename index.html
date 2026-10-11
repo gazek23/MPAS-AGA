@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f8f7f1">
+<title>MPASI Buddy — Teman Makan Si Kecil</title>
+<style>
+:root {
+  --green:#526b50;
+  --dark:#263b2c;
+  --cream:#f8f7f1;
+  --white:#fff;
+  --muted:#7c8579;
+  --line:#e9e9df;
+  --peach:#f4e3d5;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--cream); color:var(--dark);
+  font-family:Arial,Helvetica,sans-serif; font-size:14px;
+}
+button,input { font:inherit; }
+button { cursor:pointer; }
+.app { max-width:1100px; margin:auto; min-height:100vh; }
+header {
+  padding:20px 6%; display:flex; align-items:center;
+  justify-content:space-between; border-bottom:1px solid var(--line);
+  background:var(--cream);
+}
+.logo { font-size:21px; font-weight:800; letter-spacing:-1px; }
+.logo span { color:var(--green); }
+.logo small { display:block; margin-top:4px; color:var(--muted);
+  font-size:10px; font-weight:400; letter-spacing:1px; }
+.avatar {
+  width:42px;height:42px;border-radius:50%;display:grid;
+  place-items:center;background:#e5eadc;font-size:23px;
+}
+main { padding:30px 6% 100px; }
+.eyebrow { text-transform:uppercase; letter-spacing:2px;
+  font-size:10px; color:var(--green); font-weight:bold; }
+h1 { font-size:clamp(28px,5vw,42px); letter-spacing:-1.5px;
+  line-height:1.13; margin:12px 0; }
+h1 em { color:var(--green); font-style:normal; }
+.intro { color:var(--muted); line-height:1.7; max-width:500px; }
+.hero {
+  margin-top:25px; padding:28px; border-radius:22px;
+  background:#e7ecdf; display:grid; grid-template-columns:1.3fr 1fr;
+  align-items:center; gap:10px; overflow:hidden;
+}
+.hero h2 { font-size:23px; line-height:1.3; margin:10px 0; }
+.hero p { color:#5c6b58; line-height:1.6; }
+.hero-art { text-align:center; font-size:clamp(65px,10vw,105px); }
+.pill {
+  display:inline-block; border-radius:30px; padding:7px 11px;
+  background:#fff9; font-size:10px; color:var(--green);
+}
+.section-head {
+  display:flex; align-items:end; justify-content:space-between;
+  gap:10px; margin:34px 0 16px;
+}
+h2 { margin:0; font-size:21px; letter-spacing:-.5px; }
+.section-head p { color:var(--muted); font-size:12px; margin:7px 0 0; }
+.small-btn {
+  border:1px solid var(--line); border-radius:20px;
+  padding:9px 13px; background:var(--white); color:var(--green);
+}
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
+.stat { background:white; padding:17px; border-radius:15px; border:1px solid var(--line); }
+.stat b { font-size:23px; display:block; margin-bottom:5px; }
+.stat span { font-size:11px; color:var(--muted); }
+.search {
+  display:flex; gap:9px; background:white; padding:12px 15px;
+  border:1px solid var(--line); border-radius:13px; margin:20px 0 13px;
+}
+.search input { border:0; outline:none; width:100%; background:transparent; color:var(--dark); }
+.filters { display:flex; flex-wrap:wrap; gap:8px; }
+.filter {
+  padding:9px 14px; border-radius:25px; border:1px solid var(--line);
+  background:white; color:var(--muted);
+}
+.filter.active { background:var(--green); color:white; border-color:var(--green); }
+.recipes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
+.card { background:white; border:1px solid var(--line); border-radius:17px; overflow:hidden; }
+.food-art { height:135px; display:grid; place-items:center; font-size:66px; position:relative; }
+.food-art small { position:absolute; left:12px; top:12px; font-size:10px;
+  background:#ffffffdd; padding:6px 9px; border-radius:20px; }
+.food-art button { position:absolute; right:10px; top:10px; border:0;
+  background:#ffffffdf; border-radius:50%; width:33px; height:33px; font-size:17px; }
+.card-body { padding:15px; }
+.card h3 { font-size:15px; margin:0 0 8px; }
+.card p { color:var(--muted); font-size:12px; line-height:1.5; min-height:36px; }
+.meta { display:flex; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:10px; margin:12px 0; }
+.detail-btn { width:100%; padding:10px; border:0; border-radius:9px;
+  background:#edf0e7; color:var(--green); font-weight:bold; }
+.empty { grid-column:1/-1; padding:35px; text-align:center; color:var(--muted); }
+.notice { margin-top:30px; background:#f4e9dc; border-radius:14px;
+  padding:17px; color:#745e4a; font-size:12px; line-height:1.7; }
+nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:5;
+  background:#ffffffed; border-top:1px solid var(--line);
+  display:flex; justify-content:center; gap:clamp(15px,7vw,65px);
+  padding:12px 8px max(12px,env(safe-area-inset-bottom));
+  backdrop-filter:blur(10px);
+}
+nav button { background:none; border:0; color:var(--muted);
+  font-size:11px; display:grid; gap:5px; justify-items:center; min-width:52px; }
+nav button span { font-size:20px; }
+nav button.active { color:var(--green); font-weight:bold; }
+dialog { width:min(500px,92vw); border:0; border-radius:20px;
+  padding:24px; color:var(--dark); max-height:85vh; overflow:auto; }
+dialog::backdrop { background:#18251dbb; }
+dialog h2 { margin:15px 0; }
+dialog p,dialog li { line-height:1.8; color:#626d60; }
+.close { float:right; border:0; border-radius:50%; padding:8px 12px; background:#edf0e7; }
+@media(max-width:650px) {
+  header { padding:16px 5%; }
+  main { padding:25px 5% 100px; }
+  .hero { padding:20px; grid-template-columns:1.3fr .7fr; }
+  .hero-art { font-size:64px; }
+  .stats { gap:7px; }
+  .stat { padding:12px; }
+  .stat b { font-size:19px; }
+  .recipes { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .food-art { height:110px; font-size:52px; }
+  .card-body { padding:11px; }
+  .card h3 { font-size:13px; }
+}
+@media(max-width:370px) { .recipes { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">mpasi<span>buddy.</span><small>TEMAN MAKAN SI KECIL</small></div>
+  <div class="avatar">🥑</div>
+</header>
+
+<main id="content">
+  <div class="eyebrow">DAPUR KECIL, CERITA BESAR</div>
+  <h1>Halo, Ayah & Ibu!<br><em>Masak apa hari ini?</em></h1>
+  <p class="intro">Ide menu sederhana untuk menemani perjalanan makan si kecil, satu suapan penuh cinta setiap hari.</p>
+
+  <section class="hero">
+    <div>
+      <span class="pill">🌿 MULAI DARI SINI</span>
+      <h2>Menu penuh cinta,<br>dibuat dengan mudah.</h2>
+      <p>Temukan inspirasi resep dan rencanakan menu si kecil.</p>
+      <button class="small-btn" onclick="showPage('resep')">Jelajahi resep ↗</button>
+    </div>
+    <div class="hero-art">🥣</div>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><b id="recipeCount">6</b><span>Inspirasi resep</span></div>
+    <div class="stat"><b id="favoriteCount">0</b><span>Resep favorit</span></div>
+    <div class="stat"><b id="triedCount">0</b><span>Sudah dicoba</span></div>
+  </div>
+
+  <div class="section-head">
+    <div><h2 id="listTitle">Inspirasi menu</h2><p id="listSubtitle">Pilihan untuk memulai hari ini</p></div>
+    <button class="small-btn" onclick="showPage('resep')">Lihat semua →</button>
+  </div>
+
+  <div class="search">
+    <span>⌕</span><input id="search" placeholder="Cari resep atau bahan..." oninput="renderRecipes()">
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="recipes" id="recipes"></div>
+
+  <div class="notice">
+    <b>Catatan untuk orang tua 💚</b><br>
+    Resep di sini adalah inspirasi umum, bukan saran medis individual.
+    Sesuaikan tekstur dan bahan dengan kemampuan makan anak, hindari
+    risiko tersedak, serta perhatikan alergi. Untuk bayi di bawah 6 bulan,
+    MPASI umumnya belum dimulai kecuali atas arahan tenaga kesehatan.
+  </div>
+</main>
+</div>
+
+<nav>
+  <button class="active" data-page="beranda" onclick="showPage('beranda')"><span>⌂</span>Beranda</button>
+  <button data-page="resep" onclick="showPage('resep')"><span>♧</span>Resep</button>
+  <button data-page="favorit" onclick="showPage('favorit')"><span>♡</span>Favorit</button>
+  <button data-page="dicoba" onclick="showPage('dicoba')"><span>✓</span>Sudah dicoba</button>
+</nav>
+
+<dialog id="recipeDialog">
+  <button class="close" onclick="recipeDialog.close()">✕</button>
+  <div id="recipeDetail"></div>
+</dialog>
+
+<script>
+const recipes = [
+  {id:1,name:"Bubur Ayam & Wortel",emoji:"🥣",color:"#f4e7cc",category:"Ayam",age:"6+ bulan",time:"20 menit",desc:"Bubur lembut dengan ayam dan wortel.",ingredients:["Nasi matang","Ayam matang tanpa tulang","Wortel","Air secukupnya"],steps:["Pastikan ayam matang sempurna dan wortel lunak.","Masak nasi, ayam, dan wortel dengan air hingga lembut.","Haluskan atau lumatkan sesuai kemampuan makan bayi.","Periksa suhu sebelum disajikan."]},
+  {id:2,name:"Puree Alpukat",emoji:"🥑",color:"#e3ecd9",category:"Buah",age:"6+ bulan",time:"5 menit",desc:"Alpukat lembut dengan tekstur creamy.",ingredients:["Alpukat matang","ASI perah atau air matang secukupnya"],steps:["Cuci tangan dan siapkan alat bersih.","Keruk daging alpukat matang.","Lumatkan hingga teksturnya sesuai kemampuan bayi.","Sajikan segera."]},
+  {id:3,name:"Tim Ikan & Kentang",emoji:"🐟",color:"#dcebf0",category:"Ikan",age:"6+ bulan",time:"25 menit",desc:"Ikan matang dengan kentang yang lembut.",ingredients:["Ikan tanpa duri","Kentang","Air secukupnya"],steps:["Periksa ikan dengan teliti dan buang semua duri.","Masak ikan sampai matang sempurna.","Rebus kentang sampai lunak.","Lumatkan bersama dan sesuaikan tekstur."]},
+  {id:4,name:"Bubur Telur & Labu",emoji:"🎃",color:"#f5e4d4",category:"Telur",age:"6+ bulan",time:"20 menit",desc:"Labu lembut dan telur matang.",ingredients:["Telur","Labu kuning","Nasi matang","Air secukupnya"],steps:["Cuci dan potong labu.","Masak labu dan nasi sampai lunak.","Masukkan telur dan masak sampai matang sempurna.","Lumatkan sesuai kemampuan makan bayi."]},
+  {id:5,name:"Bubur Tahu Bayam",emoji:"🥬",color:"#e1eadc",category:"Nabati",age:"6+ bulan",time:"15 menit",desc:"Tahu dan sayuran dalam bubur lembut.",ingredients:["Tahu","Bayam","Nasi matang","Air secukupnya"],steps:["Cuci bayam dan siapkan tahu.","Masak nasi dan tahu sampai lunak.","Tambahkan bayam hingga matang.","Lumatkan dan periksa suhu sebelum disajikan."]},
+  {id:6,name:"Pisang Lumat",emoji:"🍌",color:"#f5edcf",category:"Buah",age:"6+ bulan",time:"5 menit",desc:"Pisang matang yang mudah dilumatkan.",ingredients:["Pisang matang"],steps:["Cuci tangan dan kupas pisang.","Lumatkan pisang hingga tidak ada bagian keras.","Sesuaikan tekstur dengan kemampuan bayi.","Sajikan segera dan jangan biarkan bayi makan tanpa pengawasan."]}
+];
+
+const categories = ["Semua","Ayam","Ikan","Telur","Nabati","Buah"];
+let activeCategory = "Semua";
+let page = "beranda";
+let favorites = JSON.parse(localStorage.getItem("mpasi-favorites") || "[]");
+let tried = JSON.parse(localStorage.getItem("mpasi-tried") || "[]");
+
+function save() {
+  localStorage.setItem("mpasi-favorites",JSON.stringify(favorites));
+  localStorage.setItem("mpasi-tried",JSON.stringify(tried));
+}
+function showPage(p) {
+  page = p;
+  document.querySelectorAll("nav button").forEach(b =>
+    b.classList.toggle("active",b.dataset.page===p));
+  document.getElementById("listTitle").textContent =
+    p==="favorit"?"Resep favorit":p==="dicoba"?"Resep yang sudah dicoba":"Inspirasi menu";
+  document.getElementById("listSubtitle").textContent =
+    p==="favorit"?"Resep yang kamu simpan":"Temukan ide menu untuk si kecil";
+  if(p==="beranda") window.scrollTo({top:0,behavior:"smooth"});
+  renderRecipes();
+}
+function renderRecipes() {
+  const query = document.getElementById("search").value.toLowerCase();
+  document.getElementById("filters").style.display =
+    (page==="favorit"||page==="dicoba")?"none":"flex";
+  document.getElementById("filters").innerHTML = categories.map(c =>
+    `<button class="filter ${activeCategory===c?"active":""}" onclick="setCategory('${c}')">${c}</button>`
+  ).join("");
+  let list = recipes.filter(r =>
+    (page!=="favorit"||favorites.includes(r.id)) &&
+    (page!=="dicoba"||tried.includes(r.id)) &&
+    (page==="favorit"||page==="dicoba"||activeCategory==="Semua"||r.category===activeCategory) &&
+    (r.name+" "+r.category+" "+r.ingredients.join(" ")).toLowerCase().includes(query)
+  );
+  if(page==="beranda") list=list.slice(0,3);
+  document.getElementById("recipes").innerHTML = list.length ? list.map(r => `
+    <article class="card">
+      <div class="food-art" style="background:${r.color}">
+        <small>${r.age}</small><span>${r.emoji}</span>
+        <button aria-label="Simpan favorit" onclick="toggleFavorite(${r.id})">${favorites.includes(r.id)?"♥":"♡"}</button>
+      </div>
+      <div class="card-body">
+        <h3>${r.name}</h3><p>${r.desc}</p>
+        <div class="meta"><span>◷ ${r.time}</span><span>● ${r.category}</span></div>
+        <button class="detail-btn" onclick="openRecipe(${r.id})">Lihat resep →</button>
+      </div>
+    </article>`).join("") : '<div class="empty">Belum ada resep di sini. Coba kategori lain atau simpan resep favorit. 🌱</div>';
+  document.getElementById("recipeCount").textContent=recipes.length;
+  document.getElementById("favoriteCount").textContent=favorites.length;
+  document.getElementById("triedCount").textContent=tried.length;
+}
+function setCategory(c) { activeCategory=c; renderRecipes(); }
+function toggleFavorite(id) {
+  favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];
+  save(); renderRecipes();
+}
+function openRecipe(id) {
+  const r=recipes.find(x=>x.id===id);
+  document.getElementById("recipeDetail").innerHTML=`
+    <div style="font-size:65px;text-align:center;background:${r.color};padding:20px;border-radius:15px">${r.emoji}</div>
+    <p class="eyebrow">${r.age} · ${r.time}</p><h2>${r.name}</h2><p>${r.desc}</p>
+    <h3>Bahan-bahan</h3><ul>${r.ingredients.map(i=>`<li>${i}</li>`).join("")}</ul>
+    <h3>Cara membuat</h3><ol>${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+    <button class="detail-btn" onclick="toggleTried(${r.id})">${tried.includes(r.id)?"✓ Sudah dicoba — batalkan":"✓ Tandai sudah dicoba"}</button>
+    <p><button class="small-btn" onclick="toggleFavorite(${r.id});openRecipe(${r.id})">${favorites.includes(r.id)?"♥ Hapus favorit":"♡ Simpan favorit"}</button></p>
+    <p style="font-size:11px">Pastikan tekstur sesuai tahap perkembangan, bayi duduk tegak dan selalu diawasi saat makan. Perkenalkan alergen dengan aman dan konsultasikan jika ada risiko alergi.</p>`;
+  document.getElementById("recipeDialog").showModal();
+}
+function toggleTried(id) {
+  tried=tried.includes(id)?tried.filter(x=>x!==id):[...tried,id];
+  save(); openRecipe(id); renderRecipes();
+}
+renderRecipes();
+</script>
+</body>
+</html>
