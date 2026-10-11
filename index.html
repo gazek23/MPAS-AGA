@@ -128,6 +128,94 @@ dialog p,dialog li { line-height:1.8; color:#626d60; }
   .card h3 { font-size:13px; }
 }
 @media(max-width:370px) { .recipes { grid-template-columns:1fr; } }
+
+/* MEAL PLANNER */
+.planner {
+  margin: 36px 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 20px;
+}
+.planner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.planner-header p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+}
+.day-card {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px;
+  min-width: 0;
+}
+.day-card h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+.meal-slot {
+  margin-top: 9px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.meal-slot label {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 7px;
+}
+.meal-slot select {
+  width: 100%;
+  padding: 9px 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--dark);
+  font-size: 12px;
+}
+.shopping-list {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #e7ecdf;
+}
+.shopping-list h3 { margin-top: 0; }
+.shopping-list label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #d3ddca;
+  line-height: 1.5;
+}
+.shopping-list input { accent-color: var(--green); }
+.planner-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+@media(min-width:700px) {
+  .week-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+}
+@media(max-width:380px) {
+  .planner { padding: 13px; }
+  .week-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -168,6 +256,37 @@ dialog p,dialog li { line-height:1.8; color:#626d60; }
   </div>
   <div class="filters" id="filters"></div>
   <div class="recipes" id="recipes"></div>
+
+<section class="planner" id="mealPlanner">
+  <div class="planner-header">
+    <div>
+      <span class="eyebrow">RUTINITAS SI KECIL</span>
+      <h2>Meal Planner 7 Hari 🥣</h2>
+      <p>Atur menu mingguan Aga dengan lebih praktis.</p>
+    </div>
+    <span class="pill">🌿 Menu keluarga</span>
+  </div>
+
+  <div class="week-grid" id="weekGrid"></div>
+
+  <div class="planner-actions">
+    <button class="small-btn" onclick="clearMealPlan()">
+      Kosongkan menu
+    </button>
+    <button class="small-btn" onclick="window.print()">
+      Cetak rencana
+    </button>
+  </div>
+
+  <div class="shopping-list">
+    <h3>🛒 Daftar belanja mingguan</h3>
+    <p id="shoppingSummary">Pilih resep untuk membuat daftar belanja.</p>
+    <div id="shoppingItems"></div>
+    <button class="small-btn" onclick="copyShoppingList()">
+      Salin daftar belanja
+    </button>
+  </div>
+</section>
 
   <div class="notice">
     <b>Catatan untuk orang tua 💚</b><br>
@@ -273,6 +392,152 @@ function toggleTried(id) {
   tried=tried.includes(id)?tried.filter(x=>x!==id):[...tried,id];
   save(); openRecipe(id); renderRecipes();
 }
+
+const weekDays = [
+  "Senin", "Selasa", "Rabu", "Kamis",
+  "Jumat", "Sabtu", "Minggu"
+];
+
+const mealSlots = [
+  { id: "pagi", label: "Pagi" },
+  { id: "siang", label: "Siang" },
+  { id: "malam", label: "Malam" }
+];
+
+let mealPlan = JSON.parse(
+  localStorage.getItem("mpasi-week-plan") || "{}"
+);
+
+let checkedShopping = JSON.parse(
+  localStorage.getItem("mpasi-shopping-checked") || "[]"
+);
+
+function saveMealPlan() {
+  localStorage.setItem(
+    "mpasi-week-plan",
+    JSON.stringify(mealPlan)
+  );
+  renderMealPlanner();
+}
+
+function renderMealPlanner() {
+  const grid = document.getElementById("weekGrid");
+  if (!grid) return;
+
+  grid.innerHTML = weekDays.map((day, dayIndex) => `
+    <article class="day-card">
+      <h3>${day}</h3>
+      ${mealSlots.map(slot => {
+        const key = dayIndex + "-" + slot.id;
+        const selected = mealPlan[key] || "";
+
+        return `
+          <div class="meal-slot">
+            <label for="meal-${key}">${slot.label}</label>
+            <select id="meal-${key}"
+              onchange="updateMeal('${key}', this.value)">
+              <option value="">+ Pilih resep</option>
+              ${recipes.map(r => `
+                <option value="${r.id}"
+                  ${String(r.id) === String(selected) ? "selected" : ""}>
+                  ${r.name}
+                </option>
+              `).join("")}
+            </select>
+          </div>
+        `;
+      }).join("")}
+    </article>
+  `).join("");
+
+  renderShoppingList();
+}
+
+function updateMeal(key, value) {
+  if (value) {
+    mealPlan[key] = Number(value);
+  } else {
+    delete mealPlan[key];
+  }
+  saveMealPlan();
+}
+
+function clearMealPlan() {
+  if (!confirm("Kosongkan seluruh menu minggu ini?")) return;
+  mealPlan = {};
+  checkedShopping = [];
+  localStorage.removeItem("mpasi-shopping-checked");
+  saveMealPlan();
+}
+
+function renderShoppingList() {
+  const chosenIds = [...new Set(
+    Object.values(mealPlan).map(Number)
+  )];
+
+  const ingredients = [...new Set(
+    recipes
+      .filter(r => chosenIds.includes(r.id))
+      .flatMap(r => r.ingredients)
+  )].sort();
+
+  document.getElementById("shoppingSummary").textContent =
+    chosenIds.length
+      ? `${chosenIds.length} resep dipilih · ${ingredients.length} jenis bahan`
+      : "Pilih resep untuk membuat daftar belanja.";
+
+  document.getElementById("shoppingItems").innerHTML =
+    ingredients.length
+      ? ingredients.map((item, i) => `
+          <label>
+            <input type="checkbox"
+              ${checkedShopping.includes(item) ? "checked" : ""}
+              onchange="toggleShoppingItem(${JSON.stringify(item)}, this.checked)">
+            <span style="${checkedShopping.includes(item) ? "text-decoration:line-through;opacity:.6" : ""}">${item}</span>
+          </label>
+        `).join("")
+      : "<p>Daftar belanja akan muncul di sini.</p>";
+}
+
+function toggleShoppingItem(item, checked) {
+  checkedShopping = checked
+    ? [...new Set([...checkedShopping, item])]
+    : checkedShopping.filter(x => x !== item);
+
+  localStorage.setItem(
+    "mpasi-shopping-checked",
+    JSON.stringify(checkedShopping)
+  );
+  renderShoppingList();
+}
+
+function copyShoppingList() {
+  const chosenIds = [...new Set(Object.values(mealPlan).map(Number))];
+  const ingredients = [...new Set(
+    recipes.filter(r => chosenIds.includes(r.id))
+      .flatMap(r => r.ingredients)
+  )];
+
+  if (!ingredients.length) {
+    alert("Pilih resep dulu, bro!");
+    return;
+  }
+
+  const text = "DAFTAR BELANJA MPAS-AGA\n\n" +
+    ingredients.map(item =>
+      `${checkedShopping.includes(item) ? "[x]" : "[ ]"} ${item}`
+    ).join("\n");
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert("Daftar belanja berhasil disalin!"))
+      .catch(() => window.prompt("Salin daftar belanja ini:", text));
+  } else {
+    window.prompt("Salin daftar belanja ini:", text);
+  }
+}
+
+renderMealPlanner();
 renderRecipes();
 </script>
 </body>
