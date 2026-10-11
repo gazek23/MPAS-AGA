@@ -420,7 +420,18 @@ function saveMealPlan() {
   renderMealPlanner();
 }
 
-function renderMealPlanner() {
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+  function renderMealPlanner() {
   const grid = document.getElementById("weekGrid");
   if (!grid) return;
 
@@ -429,21 +440,41 @@ function renderMealPlanner() {
       <h3>${day}</h3>
       ${mealSlots.map(slot => {
         const key = dayIndex + "-" + slot.id;
-        const selected = mealPlan[key] || "";
+ 
+const selected = mealPlan[key] || "";
+const isCustom =
+  typeof selected === "string" &&
+  selected.startsWith("custom:");
 
-        return `
-          <div class="meal-slot">
-            <label for="meal-${key}">${slot.label}</label>
-            <select id="meal-${key}"
-              onchange="updateMeal('${key}', this.value)">
-              <option value="">+ Pilih resep</option>
-              ${recipes.map(r => `
-                <option value="${r.id}"
-                  ${String(r.id) === String(selected) ? "selected" : ""}>
-                  ${r.name}
-                </option>
-              `).join("")}
-            </select>
+const customName = isCustom ? selected.slice(7) : "";
+
+return `
+  <div class="meal-slot">
+    <label for="meal-${key}">${slot.label}</label>
+    <select id="meal-${key}"
+      onchange="updateMeal('${key}', this.value)">
+      <option value="" ${!selected ? "selected" : ""}>
+        + Pilih resep
+      </option>
+
+      ${isCustom ? `
+        <option value="${escapeHTML(selected)}" selected>
+          ✎ ${escapeHTML(customName)}
+        </option>
+      ` : ""}
+
+      ${recipes.map(r => `
+        <option value="${r.id}"
+          ${String(r.id) === String(selected) ? "selected" : ""}>
+          ${escapeHTML(r.name)}
+        </option>
+      `).join("")}
+
+      <option value="__custom__">＋ Custom menu...</option>
+    </select>
+  </div>
+`;
+
           </div>
         `;
       }).join("")}
@@ -453,20 +484,38 @@ function renderMealPlanner() {
   renderShoppingList();
 }
 
+
 function updateMeal(key, value) {
-  if (value) {
+  if (value === "__custom__") {
+    const previous = mealPlan[key];
+    const oldName =
+      typeof previous === "string" &&
+      previous.startsWith("custom:")
+        ? previous.slice(7)
+        : "";
+
+    const name = prompt("Masukkan nama menu custom:", oldName);
+
+    if (name === null) {
+      renderMealPlanner();
+      return;
+    }
+
+    if (!name.trim()) {
+      alert("Nama menu belum diisi, bro!");
+      renderMealPlanner();
+      return;
+    }
+
+    mealPlan[key] = "custom:" + name.trim();
+  } else if (value.startsWith("custom:")) {
+    mealPlan[key] = value;
+  } else if (value) {
     mealPlan[key] = Number(value);
   } else {
     delete mealPlan[key];
   }
-  saveMealPlan();
-}
 
-function clearMealPlan() {
-  if (!confirm("Kosongkan seluruh menu minggu ini?")) return;
-  mealPlan = {};
-  checkedShopping = [];
-  localStorage.removeItem("mpasi-shopping-checked");
   saveMealPlan();
 }
 
