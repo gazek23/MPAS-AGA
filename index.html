@@ -431,7 +431,8 @@ function escapeHTML(value) {
   })[char]);
 }
 
-  function renderMealPlanner() {
+
+function renderMealPlanner() {
   const grid = document.getElementById("weekGrid");
   if (!grid) return;
 
@@ -440,41 +441,36 @@ function escapeHTML(value) {
       <h3>${day}</h3>
       ${mealSlots.map(slot => {
         const key = dayIndex + "-" + slot.id;
- 
-const selected = mealPlan[key] || "";
-const isCustom =
-  typeof selected === "string" &&
-  selected.startsWith("custom:");
+        const selected = mealPlan[key] || "";
+        const isCustom =
+          typeof selected === "string" &&
+          selected.startsWith("custom:");
+        const customName = isCustom ? selected.slice(7) : "";
 
-const customName = isCustom ? selected.slice(7) : "";
+        return `
+          <div class="meal-slot">
+            <label for="meal-${key}">${slot.label}</label>
+            <select id="meal-${key}"
+              onchange="updateMeal('${key}', this.value)">
+              <option value="" ${!selected ? "selected" : ""}>
+                + Pilih resep
+              </option>
 
-return `
-  <div class="meal-slot">
-    <label for="meal-${key}">${slot.label}</label>
-    <select id="meal-${key}"
-      onchange="updateMeal('${key}', this.value)">
-      <option value="" ${!selected ? "selected" : ""}>
-        + Pilih resep
-      </option>
+              ${isCustom ? `
+                <option value="${escapeHTML(selected)}" selected>
+                  ✎ ${escapeHTML(customName)}
+                </option>
+              ` : ""}
 
-      ${isCustom ? `
-        <option value="${escapeHTML(selected)}" selected>
-          ✎ ${escapeHTML(customName)}
-        </option>
-      ` : ""}
+              ${recipes.map(r => `
+                <option value="${r.id}"
+                  ${String(r.id) === String(selected) ? "selected" : ""}>
+                  ${escapeHTML(r.name)}
+                </option>
+              `).join("")}
 
-      ${recipes.map(r => `
-        <option value="${r.id}"
-          ${String(r.id) === String(selected) ? "selected" : ""}>
-          ${escapeHTML(r.name)}
-        </option>
-      `).join("")}
-
-      <option value="__custom__">＋ Custom menu...</option>
-    </select>
-  </div>
-`;
-
+              <option value="__custom__">＋ Custom menu...</option>
+            </select>
           </div>
         `;
       }).join("")}
