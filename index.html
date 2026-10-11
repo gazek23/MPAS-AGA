@@ -1,589 +1,460 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f8f7f1">
-<title>MPASI Buddy — Teman Makan Si Kecil</title>
-<style>
-:root {
-  --green:#526b50;
-  --dark:#263b2c;
-  --cream:#f8f7f1;
-  --white:#fff;
-  --muted:#7c8579;
-  --line:#e9e9df;
-  --peach:#f4e3d5;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0; background:var(--cream); color:var(--dark);
-  font-family:Arial,Helvetica,sans-serif; font-size:14px;
-}
-button,input { font:inherit; }
-button { cursor:pointer; }
-.app { max-width:1100px; margin:auto; min-height:100vh; }
-header {
-  padding:20px 6%; display:flex; align-items:center;
-  justify-content:space-between; border-bottom:1px solid var(--line);
-  background:var(--cream);
-}
-.logo { font-size:21px; font-weight:800; letter-spacing:-1px; }
-.logo span { color:var(--green); }
-.logo small { display:block; margin-top:4px; color:var(--muted);
-  font-size:10px; font-weight:400; letter-spacing:1px; }
-.avatar {
-  width:42px;height:42px;border-radius:50%;display:grid;
-  place-items:center;background:#e5eadc;font-size:23px;
-}
-main { padding:30px 6% 100px; }
-.eyebrow { text-transform:uppercase; letter-spacing:2px;
-  font-size:10px; color:var(--green); font-weight:bold; }
-h1 { font-size:clamp(28px,5vw,42px); letter-spacing:-1.5px;
-  line-height:1.13; margin:12px 0; }
-h1 em { color:var(--green); font-style:normal; }
-.intro { color:var(--muted); line-height:1.7; max-width:500px; }
-.hero {
-  margin-top:25px; padding:28px; border-radius:22px;
-  background:#e7ecdf; display:grid; grid-template-columns:1.3fr 1fr;
-  align-items:center; gap:10px; overflow:hidden;
-}
-.hero h2 { font-size:23px; line-height:1.3; margin:10px 0; }
-.hero p { color:#5c6b58; line-height:1.6; }
-.hero-art { text-align:center; font-size:clamp(65px,10vw,105px); }
-.pill {
-  display:inline-block; border-radius:30px; padding:7px 11px;
-  background:#fff9; font-size:10px; color:var(--green);
-}
-.section-head {
-  display:flex; align-items:end; justify-content:space-between;
-  gap:10px; margin:34px 0 16px;
-}
-h2 { margin:0; font-size:21px; letter-spacing:-.5px; }
-.section-head p { color:var(--muted); font-size:12px; margin:7px 0 0; }
-.small-btn {
-  border:1px solid var(--line); border-radius:20px;
-  padding:9px 13px; background:var(--white); color:var(--green);
-}
-.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
-.stat { background:white; padding:17px; border-radius:15px; border:1px solid var(--line); }
-.stat b { font-size:23px; display:block; margin-bottom:5px; }
-.stat span { font-size:11px; color:var(--muted); }
-.search {
-  display:flex; gap:9px; background:white; padding:12px 15px;
-  border:1px solid var(--line); border-radius:13px; margin:20px 0 13px;
-}
-.search input { border:0; outline:none; width:100%; background:transparent; color:var(--dark); }
-.filters { display:flex; flex-wrap:wrap; gap:8px; }
-.filter {
-  padding:9px 14px; border-radius:25px; border:1px solid var(--line);
-  background:white; color:var(--muted);
-}
-.filter.active { background:var(--green); color:white; border-color:var(--green); }
-.recipes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
-.card { background:white; border:1px solid var(--line); border-radius:17px; overflow:hidden; }
-.food-art { height:135px; display:grid; place-items:center; font-size:66px; position:relative; }
-.food-art small { position:absolute; left:12px; top:12px; font-size:10px;
-  background:#ffffffdd; padding:6px 9px; border-radius:20px; }
-.food-art button { position:absolute; right:10px; top:10px; border:0;
-  background:#ffffffdf; border-radius:50%; width:33px; height:33px; font-size:17px; }
-.card-body { padding:15px; }
-.card h3 { font-size:15px; margin:0 0 8px; }
-.card p { color:var(--muted); font-size:12px; line-height:1.5; min-height:36px; }
-.meta { display:flex; flex-wrap:wrap; gap:9px; color:var(--muted); font-size:10px; margin:12px 0; }
-.detail-btn { width:100%; padding:10px; border:0; border-radius:9px;
-  background:#edf0e7; color:var(--green); font-weight:bold; }
-.empty { grid-column:1/-1; padding:35px; text-align:center; color:var(--muted); }
-.notice { margin-top:30px; background:#f4e9dc; border-radius:14px;
-  padding:17px; color:#745e4a; font-size:12px; line-height:1.7; }
-nav {
-  position:fixed; bottom:0; left:0; right:0; z-index:5;
-  background:#ffffffed; border-top:1px solid var(--line);
-  display:flex; justify-content:center; gap:clamp(15px,7vw,65px);
-  padding:12px 8px max(12px,env(safe-area-inset-bottom));
-  backdrop-filter:blur(10px);
-}
-nav button { background:none; border:0; color:var(--muted);
-  font-size:11px; display:grid; gap:5px; justify-items:center; min-width:52px; }
-nav button span { font-size:20px; }
-nav button.active { color:var(--green); font-weight:bold; }
-dialog { width:min(500px,92vw); border:0; border-radius:20px;
-  padding:24px; color:var(--dark); max-height:85vh; overflow:auto; }
-dialog::backdrop { background:#18251dbb; }
-dialog h2 { margin:15px 0; }
-dialog p,dialog li { line-height:1.8; color:#626d60; }
-.close { float:right; border:0; border-radius:50%; padding:8px 12px; background:#edf0e7; }
-@media(max-width:650px) {
-  header { padding:16px 5%; }
-  main { padding:25px 5% 100px; }
-  .hero { padding:20px; grid-template-columns:1.3fr .7fr; }
-  .hero-art { font-size:64px; }
-  .stats { gap:7px; }
-  .stat { padding:12px; }
-  .stat b { font-size:19px; }
-  .recipes { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  .food-art { height:110px; font-size:52px; }
-  .card-body { padding:11px; }
-  .card h3 { font-size:13px; }
-}
-@media(max-width:370px) { .recipes { grid-template-columns:1fr; } }
-
-/* MEAL PLANNER */
-.planner {
-  margin: 36px 0;
-  padding: 22px;
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 20px;
-}
-.planner-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-.planner-header p {
-  color: var(--muted);
-  line-height: 1.6;
-}
-.week-grid {
-  display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
-  gap: 12px;
-}
-.day-card {
-  background: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 13px;
-  min-width: 0;
-}
-.day-card h3 {
-  margin: 0 0 12px;
-  font-size: 14px;
-}
-.meal-slot {
-  margin-top: 9px;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-}
-.meal-slot label {
-  display: block;
-  color: var(--muted);
-  font-size: 10px;
-  margin-bottom: 7px;
-}
-.meal-slot select {
-  width: 100%;
-  padding: 9px 5px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: white;
-  color: var(--dark);
-  font-size: 12px;
-}
-.shopping-list {
-  margin-top: 22px;
-  padding: 18px;
-  border-radius: 14px;
-  background: #e7ecdf;
-}
-.shopping-list h3 { margin-top: 0; }
-.shopping-list label {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 9px 0;
-  border-bottom: 1px solid #d3ddca;
-  line-height: 1.5;
-}
-.shopping-list input { accent-color: var(--green); }
-.planner-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 15px;
-}
-@media(min-width:700px) {
-  .week-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
-}
-@media(max-width:380px) {
-  .planner { padding: 13px; }
-  .week-grid { grid-template-columns: 1fr; }
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ef">
+  <title>MPAS-AGA — Family Food Companion</title>
+  <style>
+    :root{
+      --bg:#f7f5ef;--paper:#fffefa;--ink:#26352c;--muted:#778078;
+      --green:#426b52;--green2:#e6eee4;--sage:#a9bca5;--line:#e6e7de;
+      --gold:#c39a4b;--goldbg:#f6edda;--red:#a44f43;--redbg:#f8e9e5;
+      --shadow:0 12px 35px rgba(38,53,44,.06);--radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:1180px;margin:0 auto;padding:24px 22px 100px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:16px;background:var(--green);color:white;display:grid;place-items:center;font-size:24px}
+    .brand h1{font-size:17px;letter-spacing:.03em;margin:0;font-weight:800}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .header-date{font-size:12px;color:var(--muted);text-align:right}
+    .welcome{background:var(--green);color:#fffefa;border-radius:28px;padding:28px 30px;display:flex;justify-content:space-between;align-items:center;gap:20px;position:relative;overflow:hidden;margin-bottom:22px}
+    .welcome:after{content:"";position:absolute;width:240px;height:240px;border:1px solid rgba(255,255,255,.14);border-radius:50%;right:-45px;top:-95px;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025)}
+    .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.15em;opacity:.76;font-weight:700}
+    .welcome h2{font-size:clamp(26px,4vw,38px);line-height:1.12;letter-spacing:-.04em;margin:9px 0}
+    .welcome p{margin:0;max-width:540px;color:rgba(255,255,255,.8)}
+    .welcome-art{font-size:72px;z-index:1;padding:0 20px}
+    .button{border:0;border-radius:12px;padding:11px 15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+    .primary{background:var(--green);color:white}.primary:hover{background:#345740}
+    .welcome .primary{background:#fffefa;color:var(--green);margin-top:18px}
+    .secondary{background:var(--green2);color:var(--green)}
+    .ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .danger{background:var(--redbg);color:var(--red)}
+    .small{padding:7px 10px;font-size:12px;border-radius:9px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}
+    .stat,.panel,.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .stat{padding:18px 20px;display:flex;align-items:center;gap:14px}
+    .stat-icon{width:42px;height:42px;border-radius:14px;background:var(--green2);display:grid;place-items:center;font-size:20px}
+    .stat:nth-child(2) .stat-icon{background:var(--goldbg)}.stat:nth-child(3) .stat-icon{background:#ece9f5}
+    .stat strong{font-size:26px;display:block;line-height:1.1}.stat span{font-size:12px;color:var(--muted)}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:26px 0 14px}
+    .section-head h2{font-size:22px;letter-spacing:-.03em;margin:0}.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.8fr);gap:18px;align-items:start}
+    .panel{padding:20px}
+    .calendar-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+    .calendar-top h3{font-size:17px;margin:0}
+    .month-controls{display:flex;align-items:center;gap:8px}
+    .icon-btn{border:1px solid var(--line);background:white;border-radius:10px;width:34px;height:34px;font-size:18px;color:var(--ink)}
+    .weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+    .weekday{text-align:center;color:var(--muted);font-size:11px;padding:5px 0}
+    .day{min-height:76px;border:1px solid transparent;border-radius:12px;background:#faf9f5;padding:7px 5px;text-align:left;color:var(--ink);position:relative;min-width:0}
+    .day:hover{border-color:var(--sage)}.day.outside{opacity:.38}.day.today{border-color:var(--green)}.day.selected{background:var(--green2);border-color:var(--green)}
+    .day-number{font-size:12px;font-weight:700}.day-dots{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}.dot.completed{background:var(--green)}.dot.postponed{background:#9a91b9}
+    .day-count{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:11px}
+    .legend span{display:flex;align-items:center;gap:6px}.legend .dot{display:inline-block}
+    .selected-date{font-size:13px;color:var(--muted);margin-bottom:14px}
+    .trial-list{display:grid;gap:10px}
+    .trial-item{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fff}
+    .trial-item-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+    .trial-item h4{font-size:14px;margin:0 0 3px}.trial-meta{font-size:11px;color:var(--muted)}
+    .pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap}
+    .pill.planned{background:var(--goldbg);color:#8a6728}.pill.completed{background:var(--green2);color:var(--green)}.pill.postponed{background:#ece9f5;color:#6d648b}
+    .trial-note{font-size:12px;color:#59655d;margin:9px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+    .trial-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+    .empty{padding:24px 12px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:14px}
+    .toolbar{display:flex;gap:9px;flex-wrap:wrap}
+    .field{display:grid;gap:6px;margin-bottom:13px}.field label{font-size:12px;font-weight:750;color:#59655d}
+    input,select,textarea{width:100%;border:1px solid #dfe3d9;border-radius:11px;padding:11px 12px;background:#fffefa;color:var(--ink);outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(66,107,82,.1)}
+    textarea{resize:vertical;min-height:78px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+    .full{grid-column:1/-1}
+    .form-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+    .hidden{display:none!important}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .tab{border:1px solid var(--line);background:var(--paper);padding:9px 13px;border-radius:999px;font-weight:700;font-size:12px;color:var(--muted)}
+    .tab.active{background:var(--green);color:white;border-color:var(--green)}
+    .history-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    .history-tools input,.history-tools select{max-width:260px}
+    .history-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .food-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--paper)}
+    .food-card h3{font-size:16px;margin:0 0 4px}.food-card p{font-size:12px;color:var(--muted);margin:0 0 12px}
+    .food-card .count{font-size:12px;color:var(--green);font-weight:700}
+    .notice{font-size:12px;color:var(--muted);background:#f4f3ec;border-radius:12px;padding:12px;margin-top:14px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(20,30,23,.46);display:grid;place-items:center;padding:18px;z-index:20;overflow:auto}
+    .modal{width:min(720px,100%);max-height:92vh;overflow:auto;background:var(--paper);border-radius:22px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.2)}
+    .modal-head{display:flex;justify-content:space-between;gap:14px;align-items:start;margin-bottom:18px}
+    .modal-head h2{font-size:22px;margin:0}.modal-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#26352c;color:white;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);z-index:40;font-size:13px;max-width:90vw}
+    .bottom-nav{display:none}
+    @media(max-width:820px){.app{padding:16px 14px 95px}.layout{grid-template-columns:1fr}.welcome{padding:23px}.welcome-art{font-size:52px;padding:0}.stats{gap:8px}.stat{padding:13px;gap:9px}.stat strong{font-size:22px}.stat-icon{width:35px;height:35px}.day{min-height:64px;padding:6px 4px}.panel{padding:15px}}
+    @media(max-width:520px){.app{padding:12px 11px 92px}.brand h1{font-size:14px}.logo{width:40px;height:40px}.header-date{font-size:10px}.welcome{border-radius:22px;padding:22px 18px}.welcome-art{display:none}.welcome h2{font-size:29px}.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.stat{display:block;padding:11px 9px;border-radius:15px}.stat-icon{margin-bottom:9px}.stat strong{font-size:22px}.stat span{font-size:10px}.section-head h2{font-size:20px}.panel{padding:12px;border-radius:17px}.day{min-height:56px;border-radius:9px}.day-count{display:none}.calendar-grid,.weekdays{gap:3px}.history-list{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.bottom-nav{display:flex;position:fixed;z-index:10;left:10px;right:10px;bottom:10px;padding:8px;background:rgba(255,254,250,.96);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.12);justify-content:space-around;backdrop-filter:blur(12px)}.bottom-nav button{background:transparent;border:0;color:var(--muted);font-size:10px;display:grid;gap:4px;justify-items:center;padding:5px 9px}.bottom-nav button span:first-child{font-size:19px}.bottom-nav button.active{color:var(--green);font-weight:800}}
+  </style>
 </head>
 <body>
 <div class="app">
-<header>
-  <div class="logo">mpasi<span>buddy.</span><small>TEMAN MAKAN SI KECIL</small></div>
-  <div class="avatar">🥑</div>
-</header>
+  <header>
+    <div class="brand"><div class="logo">🥣</div><div><h1>MPAS-AGA</h1><p>Family Food Companion</p></div></div>
+    <div class="header-date" id="headerDate"></div>
+  </header>
 
-<main id="content">
-  <div class="eyebrow">DAPUR KECIL, CERITA BESAR</div>
-  <h1>Halo, Ayah & Ibu!<br><em>Masak apa hari ini?</em></h1>
-  <p class="intro">Ide menu sederhana untuk menemani perjalanan makan si kecil, satu suapan penuh cinta setiap hari.</p>
+  <main id="dashboardView">
+    <section class="welcome">
+      <div><div class="eyebrow">A little journal for growing up</div><h2>Halo, Aga! 🌿</h2><p>Catat setiap makanan baru, simpan cerita di balik setiap percobaan, dan lihat perjalanan makan Aga dari bulan ke bulan.</p><button class="button primary" id="addTrialTop">＋ Tambah percobaan</button></div>
+      <div class="welcome-art" aria-hidden="true">🥑 🥕</div>
+    </section>
+    <section class="stats" aria-label="Ringkasan">
+      <div class="stat"><div class="stat-icon">🗓️</div><div><strong id="plannedCount">0</strong><span>Akan dicoba</span></div></div>
+      <div class="stat"><div class="stat-icon">✓</div><div><strong id="completedCount">0</strong><span>Percobaan selesai</span></div></div>
+      <div class="stat"><div class="stat-icon">📝</div><div><strong id="notesCount">0</strong><span>Catatan pengamatan</span></div></div>
+    </section>
 
-  <section class="hero">
-    <div>
-      <span class="pill">🌿 MULAI DARI SINI</span>
-      <h2>Menu penuh cinta,<br>dibuat dengan mudah.</h2>
-      <p>Temukan inspirasi resep dan rencanakan menu si kecil.</p>
-      <button class="small-btn" onclick="showPage('resep')">Jelajahi resep ↗</button>
+    <div class="section-head"><div><h2>Kalender percobaan</h2><p>Rencanakan dan lihat riwayat makanan Aga per bulan.</p></div><button class="button secondary" id="addTrialCalendar">＋ Jadwalkan</button></div>
+    <div class="layout">
+      <section class="panel">
+        <div class="calendar-top"><h3 id="monthLabel">Bulan Tahun</h3><div class="month-controls"><button class="icon-btn" id="prevMonth" aria-label="Bulan sebelumnya">‹</button><button class="icon-btn" id="todayMonth" aria-label="Kembali ke bulan ini">•</button><button class="icon-btn" id="nextMonth" aria-label="Bulan berikutnya">›</button></div></div>
+        <div class="weekdays" aria-hidden="true"><div class="weekday">Min</div><div class="weekday">Sen</div><div class="weekday">Sel</div><div class="weekday">Rab</div><div class="weekday">Kam</div><div class="weekday">Jum</div><div class="weekday">Sab</div></div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="legend"><span><i class="dot"></i> Terjadwal</span><span><i class="dot completed"></i> Sudah dicoba</span><span><i class="dot postponed"></i> Ditunda</span></div>
+      </section>
+      <section class="panel">
+        <div class="calendar-top"><h3 id="selectedTitle">Catatan tanggal</h3><button class="button ghost small" id="addTrialSelected">＋</button></div>
+        <div class="selected-date" id="selectedDateLabel"></div>
+        <div class="trial-list" id="selectedTrials"></div>
+      </section>
     </div>
-    <div class="hero-art">🥣</div>
-  </section>
+    <div class="section-head"><div><h2>Terakhir dicatat</h2><p>Percobaan terbaru Aga.</p></div><button class="button ghost small" data-go="history">Lihat semua</button></div>
+    <div class="history-list" id="recentTrials"></div>
+  </main>
 
-  <div class="stats">
-    <div class="stat"><b id="recipeCount">6</b><span>Inspirasi resep</span></div>
-    <div class="stat"><b id="favoriteCount">0</b><span>Resep favorit</span></div>
-    <div class="stat"><b id="triedCount">0</b><span>Sudah dicoba</span></div>
-  </div>
+  <main id="historyView" class="hidden">
+    <div class="section-head"><div><h2>Riwayat percobaan</h2><p>Semua percobaan, termasuk makanan yang dicoba berulang kali.</p></div><button class="button primary" id="addTrialHistory">＋ Tambah</button></div>
+    <div class="history-tools"><input id="historySearch" type="search" placeholder="Cari nama makanan atau catatan…"><select id="historyStatus"><option value="all">Semua status</option><option value="planned">Terjadwal</option><option value="completed">Sudah dicoba</option><option value="postponed">Ditunda</option></select><select id="historyMonth"><option value="all">Semua bulan</option></select></div>
+    <div class="history-list" id="historyList"></div>
+  </main>
 
-  <div class="section-head">
-    <div><h2 id="listTitle">Inspirasi menu</h2><p id="listSubtitle">Pilihan untuk memulai hari ini</p></div>
-    <button class="small-btn" onclick="showPage('resep')">Lihat semua →</button>
-  </div>
-
-  <div class="search">
-    <span>⌕</span><input id="search" placeholder="Cari resep atau bahan..." oninput="renderRecipes()">
-  </div>
-  <div class="filters" id="filters"></div>
-  <div class="recipes" id="recipes"></div>
-
-<section class="planner" id="mealPlanner">
-  <div class="planner-header">
-    <div>
-      <span class="eyebrow">RUTINITAS SI KECIL</span>
-      <h2>Meal Planner 7 Hari 🥣</h2>
-      <p>Atur menu mingguan Aga dengan lebih praktis.</p>
-    </div>
-    <span class="pill">🌿 Menu keluarga</span>
-  </div>
-
-  <div class="week-grid" id="weekGrid"></div>
-
-  <div class="planner-actions">
-    <button class="small-btn" onclick="clearMealPlan()">
-      Kosongkan menu
-    </button>
-    <button class="small-btn" onclick="window.print()">
-      Cetak rencana
-    </button>
-  </div>
-
-  <div class="shopping-list">
-    <h3>🛒 Daftar belanja mingguan</h3>
-    <p id="shoppingSummary">Pilih resep untuk membuat daftar belanja.</p>
-    <div id="shoppingItems"></div>
-    <button class="small-btn" onclick="copyShoppingList()">
-      Salin daftar belanja
-    </button>
-  </div>
-</section>
-
-  <div class="notice">
-    <b>Catatan untuk orang tua 💚</b><br>
-    Resep di sini adalah inspirasi umum, bukan saran medis individual.
-    Sesuaikan tekstur dan bahan dengan kemampuan makan anak, hindari
-    risiko tersedak, serta perhatikan alergi. Untuk bayi di bawah 6 bulan,
-    MPASI umumnya belum dimulai kecuali atas arahan tenaga kesehatan.
-  </div>
-</main>
+  <main id="foodsView" class="hidden">
+    <div class="section-head"><div><h2>Daftar makanan</h2><p>Katalog makanan dan jumlah percobaan yang tercatat.</p></div><button class="button primary" id="addFoodBtn">＋ Makanan</button></div>
+    <div class="history-tools"><input id="foodSearch" type="search" placeholder="Cari makanan…"><select id="foodCategory"><option value="all">Semua kategori</option><option>Karbohidrat</option><option>Protein hewani</option><option>Protein nabati</option><option>Sayur</option><option>Buah</option><option>Lainnya</option></select></div>
+    <div class="history-list" id="foodsList"></div>
+  </main>
 </div>
 
-<nav>
-  <button class="active" data-page="beranda" onclick="showPage('beranda')"><span>⌂</span>Beranda</button>
-  <button data-page="resep" onclick="showPage('resep')"><span>♧</span>Resep</button>
-  <button data-page="favorit" onclick="showPage('favorit')"><span>♡</span>Favorit</button>
-  <button data-page="dicoba" onclick="showPage('dicoba')"><span>✓</span>Sudah dicoba</button>
+<nav class="bottom-nav" aria-label="Navigasi utama">
+  <button class="active" data-view="dashboardView"><span>⌂</span><span>Beranda</span></button>
+  <button data-view="dashboardView" data-scroll="calendarGrid"><span>▦</span><span>Kalender</span></button>
+  <button data-view="historyView"><span>▤</span><span>Riwayat</span></button>
+  <button data-view="foodsView"><span>🥕</span><span>Makanan</span></button>
 </nav>
 
-<dialog id="recipeDialog">
-  <button class="close" onclick="recipeDialog.close()">✕</button>
-  <div id="recipeDetail"></div>
-</dialog>
+<div id="trialModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="trialModalTitle">
+  <div class="modal">
+    <div class="modal-head"><div><h2 id="trialModalTitle">Tambah percobaan</h2><p>Satu catatan untuk satu tanggal percobaan.</p></div><button class="icon-btn" id="closeTrial" aria-label="Tutup">×</button></div>
+    <form id="trialForm">
+      <input type="hidden" id="trialId">
+      <div class="form-grid">
+        <div class="field"><label for="trialFood">Nama makanan *</label><input id="trialFood" list="foodOptions" required placeholder="Contoh: telur"><datalist id="foodOptions"></datalist></div>
+        <div class="field"><label for="trialDate">Tanggal *</label><input id="trialDate" type="date" required></div>
+        <div class="field"><label for="trialTime">Waktu makan</label><select id="trialTime"><option value="morning">Pagi</option><option value="afternoon">Siang</option><option value="evening">Sore/malam</option><option value="other">Lainnya</option></select></div>
+        <div class="field"><label for="trialStatus">Status</label><select id="trialStatus"><option value="planned">Direncanakan</option><option value="completed">Sudah dicoba</option><option value="postponed">Ditunda</option></select></div>
+        <div class="field full"><label for="trialPreparation">Bentuk penyajian / persiapan</label><input id="trialPreparation" placeholder="Contoh: telur matang, dilumatkan sesuai usia"></div>
+        <div class="field full"><label for="trialResponse">Respons saat makan</label><select id="trialResponse"><option value="">Belum dicatat</option><option value="accepted">Mau makan</option><option value="refused">Menolak</option><option value="mixed">Sebagian mau, sebagian menolak</option><option value="other">Respons lainnya</option></select></div>
+        <div class="field full"><label for="trialObservation">Catatan pengamatan</label><textarea id="trialObservation" placeholder="Apa yang terlihat? Catat gejala, waktu muncul, durasi, dan hal relevan lainnya."></textarea></div>
+        <div class="field full"><label for="trialFollowup">Tindak lanjut / catatan berikutnya</label><textarea id="trialFollowup" placeholder="Misalnya hal yang ingin diperhatikan pada percobaan selanjutnya."></textarea></div>
+      </div>
+      <div class="notice">Jurnal ini membantu menyimpan pengamatan, bukan mendiagnosis alergi atau kondisi medis. Jika Aga mengalami kesulitan bernapas atau pembengkakan lidah/wajah, cari pertolongan medis segera.</div>
+      <div class="form-actions"><button type="button" class="button ghost" id="cancelTrial">Batal</button><button type="submit" class="button primary">Simpan catatan</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="foodModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="foodModalTitle">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-head"><div><h2 id="foodModalTitle">Tambah makanan</h2><p>Tambahkan makanan ke katalog Aga.</p></div><button class="icon-btn" id="closeFood" aria-label="Tutup">×</button></div>
+    <form id="foodForm">
+      <div class="field"><label for="foodName">Nama makanan *</label><input id="foodName" required placeholder="Contoh: telur"></div>
+      <div class="field"><label for="foodCat">Kategori</label><select id="foodCat"><option>Karbohidrat</option><option>Protein hewani</option><option>Protein nabati</option><option>Sayur</option><option>Buah</option><option>Lainnya</option></select></div>
+      <div class="field"><label for="foodNotes">Catatan umum (opsional)</label><textarea id="foodNotes" placeholder="Catatan tentang makanan ini"></textarea></div>
+      <div class="form-actions"><button type="button" class="button ghost" id="cancelFood">Batal</button><button type="submit" class="button primary">Simpan makanan</button></div>
+    </form>
+  </div>
+</div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
 <script>
-const recipes = [
-  {id:1,name:"Bubur Ayam & Wortel",emoji:"🥣",color:"#f4e7cc",category:"Ayam",age:"6+ bulan",time:"20 menit",desc:"Bubur lembut dengan ayam dan wortel.",ingredients:["Nasi matang","Ayam matang tanpa tulang","Wortel","Air secukupnya"],steps:["Pastikan ayam matang sempurna dan wortel lunak.","Masak nasi, ayam, dan wortel dengan air hingga lembut.","Haluskan atau lumatkan sesuai kemampuan makan bayi.","Periksa suhu sebelum disajikan."]},
-  {id:2,name:"Puree Alpukat",emoji:"🥑",color:"#e3ecd9",category:"Buah",age:"6+ bulan",time:"5 menit",desc:"Alpukat lembut dengan tekstur creamy.",ingredients:["Alpukat matang","ASI perah atau air matang secukupnya"],steps:["Cuci tangan dan siapkan alat bersih.","Keruk daging alpukat matang.","Lumatkan hingga teksturnya sesuai kemampuan bayi.","Sajikan segera."]},
-  {id:3,name:"Tim Ikan & Kentang",emoji:"🐟",color:"#dcebf0",category:"Ikan",age:"6+ bulan",time:"25 menit",desc:"Ikan matang dengan kentang yang lembut.",ingredients:["Ikan tanpa duri","Kentang","Air secukupnya"],steps:["Periksa ikan dengan teliti dan buang semua duri.","Masak ikan sampai matang sempurna.","Rebus kentang sampai lunak.","Lumatkan bersama dan sesuaikan tekstur."]},
-  {id:4,name:"Bubur Telur & Labu",emoji:"🎃",color:"#f5e4d4",category:"Telur",age:"6+ bulan",time:"20 menit",desc:"Labu lembut dan telur matang.",ingredients:["Telur","Labu kuning","Nasi matang","Air secukupnya"],steps:["Cuci dan potong labu.","Masak labu dan nasi sampai lunak.","Masukkan telur dan masak sampai matang sempurna.","Lumatkan sesuai kemampuan makan bayi."]},
-  {id:5,name:"Bubur Tahu Bayam",emoji:"🥬",color:"#e1eadc",category:"Nabati",age:"6+ bulan",time:"15 menit",desc:"Tahu dan sayuran dalam bubur lembut.",ingredients:["Tahu","Bayam","Nasi matang","Air secukupnya"],steps:["Cuci bayam dan siapkan tahu.","Masak nasi dan tahu sampai lunak.","Tambahkan bayam hingga matang.","Lumatkan dan periksa suhu sebelum disajikan."]},
-  {id:6,name:"Pisang Lumat",emoji:"🍌",color:"#f5edcf",category:"Buah",age:"6+ bulan",time:"5 menit",desc:"Pisang matang yang mudah dilumatkan.",ingredients:["Pisang matang"],steps:["Cuci tangan dan kupas pisang.","Lumatkan pisang hingga tidak ada bagian keras.","Sesuaikan tekstur dengan kemampuan bayi.","Sajikan segera dan jangan biarkan bayi makan tanpa pengawasan."]}
-];
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const STORAGE_KEY = "mpas-aga-family-food-v1";
+  const OLD_KEYS = ["mpasiBuddyFavorites","mpasiBuddyTried","mealPlan"];
+  const now = new Date();
+  let viewMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  let selectedDate = toISODate(now);
+  let activeView = "dashboardView";
+  let toastTimer = null;
+  let state = loadState();
 
-const categories = ["Semua","Ayam","Ikan","Telur","Nabati","Buah"];
-let activeCategory = "Semua";
-let page = "beranda";
-let favorites = JSON.parse(localStorage.getItem("mpasi-favorites") || "[]");
-let tried = JSON.parse(localStorage.getItem("mpasi-tried") || "[]");
-
-function save() {
-  localStorage.setItem("mpasi-favorites",JSON.stringify(favorites));
-  localStorage.setItem("mpasi-tried",JSON.stringify(tried));
-}
-function showPage(p) {
-  page = p;
-  document.querySelectorAll("nav button").forEach(b =>
-    b.classList.toggle("active",b.dataset.page===p));
-  document.getElementById("listTitle").textContent =
-    p==="favorit"?"Resep favorit":p==="dicoba"?"Resep yang sudah dicoba":"Inspirasi menu";
-  document.getElementById("listSubtitle").textContent =
-    p==="favorit"?"Resep yang kamu simpan":"Temukan ide menu untuk si kecil";
-  if(p==="beranda") window.scrollTo({top:0,behavior:"smooth"});
-  renderRecipes();
-}
-function renderRecipes() {
-  const query = document.getElementById("search").value.toLowerCase();
-  document.getElementById("filters").style.display =
-    (page==="favorit"||page==="dicoba")?"none":"flex";
-  document.getElementById("filters").innerHTML = categories.map(c =>
-    `<button class="filter ${activeCategory===c?"active":""}" onclick="setCategory('${c}')">${c}</button>`
-  ).join("");
-  let list = recipes.filter(r =>
-    (page!=="favorit"||favorites.includes(r.id)) &&
-    (page!=="dicoba"||tried.includes(r.id)) &&
-    (page==="favorit"||page==="dicoba"||activeCategory==="Semua"||r.category===activeCategory) &&
-    (r.name+" "+r.category+" "+r.ingredients.join(" ")).toLowerCase().includes(query)
-  );
-  if(page==="beranda") list=list.slice(0,3);
-  document.getElementById("recipes").innerHTML = list.length ? list.map(r => `
-    <article class="card">
-      <div class="food-art" style="background:${r.color}">
-        <small>${r.age}</small><span>${r.emoji}</span>
-        <button aria-label="Simpan favorit" onclick="toggleFavorite(${r.id})">${favorites.includes(r.id)?"♥":"♡"}</button>
-      </div>
-      <div class="card-body">
-        <h3>${r.name}</h3><p>${r.desc}</p>
-        <div class="meta"><span>◷ ${r.time}</span><span>● ${r.category}</span></div>
-        <button class="detail-btn" onclick="openRecipe(${r.id})">Lihat resep →</button>
-      </div>
-    </article>`).join("") : '<div class="empty">Belum ada resep di sini. Coba kategori lain atau simpan resep favorit. 🌱</div>';
-  document.getElementById("recipeCount").textContent=recipes.length;
-  document.getElementById("favoriteCount").textContent=favorites.length;
-  document.getElementById("triedCount").textContent=tried.length;
-}
-function setCategory(c) { activeCategory=c; renderRecipes(); }
-function toggleFavorite(id) {
-  favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];
-  save(); renderRecipes();
-}
-function openRecipe(id) {
-  const r=recipes.find(x=>x.id===id);
-  document.getElementById("recipeDetail").innerHTML=`
-    <div style="font-size:65px;text-align:center;background:${r.color};padding:20px;border-radius:15px">${r.emoji}</div>
-    <p class="eyebrow">${r.age} · ${r.time}</p><h2>${r.name}</h2><p>${r.desc}</p>
-    <h3>Bahan-bahan</h3><ul>${r.ingredients.map(i=>`<li>${i}</li>`).join("")}</ul>
-    <h3>Cara membuat</h3><ol>${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
-    <button class="detail-btn" onclick="toggleTried(${r.id})">${tried.includes(r.id)?"✓ Sudah dicoba — batalkan":"✓ Tandai sudah dicoba"}</button>
-    <p><button class="small-btn" onclick="toggleFavorite(${r.id});openRecipe(${r.id})">${favorites.includes(r.id)?"♥ Hapus favorit":"♡ Simpan favorit"}</button></p>
-    <p style="font-size:11px">Pastikan tekstur sesuai tahap perkembangan, bayi duduk tegak dan selalu diawasi saat makan. Perkenalkan alergen dengan aman dan konsultasikan jika ada risiko alergi.</p>`;
-  document.getElementById("recipeDialog").showModal();
-}
-function toggleTried(id) {
-  tried=tried.includes(id)?tried.filter(x=>x!==id):[...tried,id];
-  save(); openRecipe(id); renderRecipes();
-}
-
-const weekDays = [
-  "Senin", "Selasa", "Rabu", "Kamis",
-  "Jumat", "Sabtu", "Minggu"
-];
-
-const mealSlots = [
-  { id: "pagi", label: "Pagi" },
-  { id: "siang", label: "Siang" },
-  { id: "malam", label: "Malam" }
-];
-
-let mealPlan = JSON.parse(
-  localStorage.getItem("mpasi-week-plan") || "{}"
-);
-
-let checkedShopping = JSON.parse(
-  localStorage.getItem("mpasi-shopping-checked") || "[]"
-);
-
-function saveMealPlan() {
-  localStorage.setItem(
-    "mpasi-week-plan",
-    JSON.stringify(mealPlan)
-  );
-  renderMealPlanner();
-}
-
-
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-
-function renderMealPlanner() {
-  const grid = document.getElementById("weekGrid");
-  if (!grid) return;
-
-  grid.innerHTML = weekDays.map((day, dayIndex) => `
-    <article class="day-card">
-      <h3>${day}</h3>
-      ${mealSlots.map(slot => {
-        const key = dayIndex + "-" + slot.id;
-        const selected = mealPlan[key] || "";
-        const isCustom =
-          typeof selected === "string" &&
-          selected.startsWith("custom:");
-        const customName = isCustom ? selected.slice(7) : "";
-
-        return `
-          <div class="meal-slot">
-            <label for="meal-${key}">${slot.label}</label>
-            <select id="meal-${key}"
-              onchange="updateMeal('${key}', this.value)">
-              <option value="" ${!selected ? "selected" : ""}>
-                + Pilih resep
-              </option>
-
-              ${isCustom ? `
-                <option value="${escapeHTML(selected)}" selected>
-                  ✎ ${escapeHTML(customName)}
-                </option>
-              ` : ""}
-
-              ${recipes.map(r => `
-                <option value="${r.id}"
-                  ${String(r.id) === String(selected) ? "selected" : ""}>
-                  ${escapeHTML(r.name)}
-                </option>
-              `).join("")}
-
-              <option value="__custom__">＋ Custom menu...</option>
-            </select>
-          </div>
-        `;
-      }).join("")}
-    </article>
-  `).join("");
-
-  renderShoppingList();
-}
-
-
-function updateMeal(key, value) {
-  if (value === "__custom__") {
-    const previous = mealPlan[key];
-    const oldName =
-      typeof previous === "string" &&
-      previous.startsWith("custom:")
-        ? previous.slice(7)
-        : "";
-
-    const name = prompt("Masukkan nama menu custom:", oldName);
-
-    if (name === null) {
-      renderMealPlanner();
-      return;
+  function toISODate(date) {
+    const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,"0"), d = String(date.getDate()).padStart(2,"0");
+    return `${y}-${m}-${d}`;
+  }
+  function parseDate(value) {
+    const parts = String(value || "").split("-").map(Number);
+    return parts.length === 3 && parts.every(Number.isFinite) ? new Date(parts[0], parts[1]-1, parts[2]) : new Date();
+  }
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  }
+  function uid(prefix="id") {
+    return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+  }
+  function loadState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (saved && Array.isArray(saved.foods) && Array.isArray(saved.trials)) return saved;
+    } catch (error) { console.warn("Data jurnal belum bisa dibaca:", error); }
+    return {foods:[],trials:[]};
+  }
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      return true;
+    } catch (error) {
+      showToast("Data gagal disimpan. Periksa ruang penyimpanan browser.");
+      console.error(error);
+      return false;
     }
-
-    if (!name.trim()) {
-      alert("Nama menu belum diisi, bro!");
-      renderMealPlanner();
-      return;
+  }
+  function showToast(message) {
+    $("toast").textContent = message;
+    $("toast").classList.remove("hidden");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2600);
+  }
+  function monthTitle(date) {
+    return new Intl.DateTimeFormat("id-ID",{month:"long",year:"numeric"}).format(date);
+  }
+  function longDate(dateString) {
+    return new Intl.DateTimeFormat("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(parseDate(dateString));
+  }
+  function shortDate(dateString) {
+    return new Intl.DateTimeFormat("id-ID",{day:"numeric",month:"short",year:"numeric"}).format(parseDate(dateString));
+  }
+  function timeLabel(value) {
+    return ({morning:"Pagi",afternoon:"Siang",evening:"Sore/malam",other:"Lainnya"})[value] || "";
+  }
+  function statusLabel(value) {
+    return ({planned:"Terjadwal",completed:"Sudah dicoba",postponed:"Ditunda"})[value] || "Terjadwal";
+  }
+  function statusClass(value) { return ["planned","completed","postponed"].includes(value) ? value : "planned"; }
+  function getFoodName(foodId) {
+    return state.foods.find(food => food.id === foodId)?.name || "Makanan dihapus";
+  }
+  function upsertFood(name, category="Lainnya", notes="") {
+    const normalized = name.trim().toLocaleLowerCase("id-ID");
+    let food = state.foods.find(item => item.name.trim().toLocaleLowerCase("id-ID") === normalized);
+    if (!food) {
+      food = {id:uid("food"),name:name.trim(),category,notes,createdAt:new Date().toISOString()};
+      state.foods.push(food);
+    } else {
+      if (category) food.category = category;
+      if (notes) food.notes = notes;
     }
-
-    mealPlan[key] = "custom:" + name.trim();
-  } else if (value.startsWith("custom:")) {
-    mealPlan[key] = value;
-  } else if (value) {
-    mealPlan[key] = Number(value);
-  } else {
-    delete mealPlan[key];
+    return food;
   }
-
-  saveMealPlan();
-}
-
-function renderShoppingList() {
-  const chosenIds = [...new Set(
-    Object.values(mealPlan).map(Number)
-  )];
-
-  const ingredients = [...new Set(
-    recipes
-      .filter(r => chosenIds.includes(r.id))
-      .flatMap(r => r.ingredients)
-  )].sort();
-
-  document.getElementById("shoppingSummary").textContent =
-    chosenIds.length
-      ? `${chosenIds.length} resep dipilih · ${ingredients.length} jenis bahan`
-      : "Pilih resep untuk membuat daftar belanja.";
-
-  document.getElementById("shoppingItems").innerHTML =
-    ingredients.length
-      ? ingredients.map((item, i) => `
-          <label>
-            <input type="checkbox"
-              ${checkedShopping.includes(item) ? "checked" : ""}
-              onchange="toggleShoppingItem(${JSON.stringify(item)}, this.checked)">
-            <span style="${checkedShopping.includes(item) ? "text-decoration:line-through;opacity:.6" : ""}">${item}</span>
-          </label>
-        `).join("")
-      : "<p>Daftar belanja akan muncul di sini.</p>";
-}
-
-function toggleShoppingItem(item, checked) {
-  checkedShopping = checked
-    ? [...new Set([...checkedShopping, item])]
-    : checkedShopping.filter(x => x !== item);
-
-  localStorage.setItem(
-    "mpasi-shopping-checked",
-    JSON.stringify(checkedShopping)
-  );
-  renderShoppingList();
-}
-
-function copyShoppingList() {
-  const chosenIds = [...new Set(Object.values(mealPlan).map(Number))];
-  const ingredients = [...new Set(
-    recipes.filter(r => chosenIds.includes(r.id))
-      .flatMap(r => r.ingredients)
-  )];
-
-  if (!ingredients.length) {
-    alert("Pilih resep dulu, bro!");
-    return;
+  function syncFoodOptions() {
+    $("foodOptions").innerHTML = state.foods.slice().sort((a,b)=>a.name.localeCompare(b.name,"id")).map(food=>`<option value="${escapeHTML(food.name)}"></option>`).join("");
   }
-
-  const text = "DAFTAR BELANJA MPAS-AGA\n\n" +
-    ingredients.map(item =>
-      `${checkedShopping.includes(item) ? "[x]" : "[ ]"} ${item}`
-    ).join("\n");
-
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text)
-      .then(() => alert("Daftar belanja berhasil disalin!"))
-      .catch(() => window.prompt("Salin daftar belanja ini:", text));
-  } else {
-    window.prompt("Salin daftar belanja ini:", text);
+  function renderStats() {
+    const today = toISODate(new Date());
+    $("plannedCount").textContent = state.trials.filter(t=>t.status==="planned" && t.date>=today).length;
+    $("completedCount").textContent = state.trials.filter(t=>t.status==="completed").length;
+    $("notesCount").textContent = state.trials.filter(t=>t.observations?.trim()).length;
   }
-}
-
-renderMealPlanner();
-renderRecipes();
+  function renderCalendar() {
+    $("monthLabel").textContent = monthTitle(viewMonth);
+    const first = new Date(viewMonth.getFullYear(),viewMonth.getMonth(),1);
+    const start = new Date(first);
+    start.setDate(1-first.getDay());
+    const today = toISODate(new Date());
+    let html = "";
+    for (let i=0;i<42;i++) {
+      const date = new Date(start); date.setDate(start.getDate()+i);
+      const iso = toISODate(date);
+      const trials = state.trials.filter(t=>t.date===iso);
+      const classes = ["day"];
+      if(date.getMonth()!==viewMonth.getMonth()) classes.push("outside");
+      if(iso===today) classes.push("today");
+      if(iso===selectedDate) classes.push("selected");
+      const dots = trials.slice(0,5).map(t=>`<i class="dot ${statusClass(t.status)}"></i>`).join("");
+      const count = trials.length ? `${trials.length} catatan` : "";
+      html += `<button type="button" class="${classes.join(" ")}" data-date="${iso}" aria-label="${escapeHTML(longDate(iso))}, ${trials.length} catatan"><span class="day-number">${date.getDate()}</span><span class="day-dots">${dots}</span><span class="day-count">${count}</span></button>`;
+    }
+    $("calendarGrid").innerHTML = html;
+  }
+  function trialCard(trial, compact=false) {
+    const foodName = getFoodName(trial.foodId);
+    const note = trial.observations?.trim();
+    return `<article class="trial-item">
+      <div class="trial-item-top"><div><h4>${escapeHTML(foodName)}</h4><div class="trial-meta">${escapeHTML(timeLabel(trial.mealTime))}${trial.preparation ? " · "+escapeHTML(trial.preparation) : ""}</div></div><span class="pill ${statusClass(trial.status)}">${statusLabel(trial.status)}</span></div>
+      ${note ? `<p class="trial-note">${escapeHTML(note)}</p>` : ""}
+      ${trial.followUp?.trim() ? `<p class="trial-note"><strong>Tindak lanjut:</strong> ${escapeHTML(trial.followUp)}</p>` : ""}
+      <div class="trial-actions"><button class="button secondary small" data-edit-trial="${trial.id}">Edit catatan</button>${trial.status!=="completed" ? `<button class="button ghost small" data-complete-trial="${trial.id}">Tandai dicoba</button>` : ""}<button class="button ghost small" data-duplicate-trial="${trial.id}">Jadwalkan lagi</button><button class="button danger small" data-delete-trial="${trial.id}">Hapus</button></div>
+    </article>`;
+  }
+  function renderSelectedTrials() {
+    $("selectedTitle").textContent = "Catatan tanggal";
+    $("selectedDateLabel").textContent = longDate(selectedDate);
+    const trials = state.trials.filter(t=>t.date===selectedDate).sort((a,b)=>(a.mealTime||"").localeCompare(b.mealTime||""));
+    $("selectedTrials").innerHTML = trials.length ? trials.map(t=>trialCard(t,true)).join("") : `<div class="empty">Belum ada catatan untuk tanggal ini.<br><br>Tambahkan makanan yang akan Aga coba.</div>`;
+  }
+  function renderRecent() {
+    const recent = state.trials.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+    $("recentTrials").innerHTML = recent.length ? recent.map(t=>`<div class="food-card"><p>${escapeHTML(shortDate(t.date))} · ${escapeHTML(timeLabel(t.mealTime))}</p><h3>${escapeHTML(getFoodName(t.foodId))}</h3><p>${escapeHTML(statusLabel(t.status))}${t.observations ? " · "+escapeHTML(t.observations.slice(0,95)) : ""}</p><button class="button secondary small" data-edit-trial="${t.id}">Buka catatan</button></div>`).join("") : `<div class="empty" style="grid-column:1/-1">Belum ada percobaan. Mulai dengan menjadwalkan makanan pertama Aga.</div>`;
+  }
+  function renderHistory() {
+    const search = $("historySearch").value.trim().toLocaleLowerCase("id-ID");
+    const status = $("historyStatus").value, month = $("historyMonth").value;
+    const list = state.trials.filter(t=>{
+      const text = `${getFoodName(t.foodId)} ${t.observations||""} ${t.followUp||""} ${t.preparation||""}`.toLocaleLowerCase("id-ID");
+      return (!search||text.includes(search)) && (status==="all"||t.status===status) && (month==="all"||t.date.startsWith(month));
+    }).sort((a,b)=>b.date.localeCompare(a.date));
+    $("historyList").innerHTML = list.length ? list.map(t=>`<div class="food-card"><p>${escapeHTML(longDate(t.date))} · ${escapeHTML(timeLabel(t.mealTime))}</p><h3>${escapeHTML(getFoodName(t.foodId))}</h3><p>${escapeHTML(statusLabel(t.status))}${t.preparation ? " · "+escapeHTML(t.preparation) : ""}</p>${t.observations ? `<p>${escapeHTML(t.observations)}</p>` : `<p>Belum ada catatan pengamatan.</p>`}${t.followUp ? `<p><strong>Tindak lanjut:</strong> ${escapeHTML(t.followUp)}</p>`:""}<div class="toolbar"><button class="button secondary small" data-edit-trial="${t.id}">Edit</button><button class="button ghost small" data-duplicate-trial="${t.id}">Jadwalkan lagi</button><button class="button danger small" data-delete-trial="${t.id}">Hapus</button></div></div>`).join("") : `<div class="empty" style="grid-column:1/-1">Belum ada catatan yang sesuai.</div>`;
+  }
+  function renderFoods() {
+    const search = $("foodSearch").value.trim().toLocaleLowerCase("id-ID"), category = $("foodCategory").value;
+    const foods = state.foods.filter(f=>(!search||f.name.toLocaleLowerCase("id-ID").includes(search))&&(category==="all"||f.category===category)).sort((a,b)=>a.name.localeCompare(b.name,"id"));
+    $("foodsList").innerHTML = foods.length ? foods.map(food=>{
+      const trials=state.trials.filter(t=>t.foodId===food.id).sort((a,b)=>b.date.localeCompare(a.date));
+      const completed=trials.filter(t=>t.status==="completed").length;
+      return `<article class="food-card"><p>${escapeHTML(food.category||"Lainnya")}</p><h3>${escapeHTML(food.name)}</h3><p>${escapeHTML(food.notes||"Belum ada catatan umum.")}</p><div class="count">${trials.length} percobaan · ${completed} selesai</div><div class="toolbar" style="margin-top:12px"><button class="button secondary small" data-plan-food="${food.id}">＋ Jadwalkan</button><button class="button ghost small" data-food-history="${food.id}">Lihat riwayat</button></div></article>`;
+    }).join("") : `<div class="empty" style="grid-column:1/-1">Belum ada makanan di katalog. Lu bisa menambahkan makanan di sini atau langsung dari form percobaan.</div>`;
+  }
+  function renderMonthOptions() {
+    const selected = $("historyMonth").value || "all";
+    const months = [...new Set(state.trials.map(t=>t.date.slice(0,7)))].sort().reverse();
+    $("historyMonth").innerHTML = `<option value="all">Semua bulan</option>`+months.map(m=>`<option value="${m}">${escapeHTML(monthTitle(parseDate(m+"-01")))}</option>`).join("");
+    $("historyMonth").value = months.includes(selected) ? selected : "all";
+  }
+  function renderAll() {
+    renderStats(); renderCalendar(); renderSelectedTrials(); renderRecent(); renderMonthOptions(); renderHistory(); renderFoods(); syncFoodOptions();
+  }
+  function showView(view, scrollTarget=null) {
+    activeView = view;
+    ["dashboardView","historyView","foodsView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));
+    document.querySelectorAll(".bottom-nav button").forEach(btn=>btn.classList.toggle("active",btn.dataset.view===view && !btn.dataset.scroll));
+    if (view==="dashboardView" && scrollTarget) setTimeout(()=>$(scrollTarget)?.scrollIntoView({behavior:"smooth",block:"start"}),30);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  function openTrialModal(trial=null, defaults={}) {
+    $("trialForm").reset();
+    $("trialId").value = trial?.id || "";
+    $("trialModalTitle").textContent = trial ? "Edit percobaan" : "Tambah percobaan";
+    $("trialFood").value = trial ? getFoodName(trial.foodId) : (defaults.foodName||"");
+    $("trialDate").value = trial?.date || defaults.date || selectedDate || toISODate(new Date());
+    $("trialTime").value = trial?.mealTime || defaults.mealTime || "morning";
+    $("trialStatus").value = trial?.status || "planned";
+    $("trialPreparation").value = trial?.preparation || "";
+    $("trialResponse").value = trial?.feedingResponse || "";
+    $("trialObservation").value = trial?.observations || "";
+    $("trialFollowup").value = trial?.followUp || "";
+    $("trialModal").classList.remove("hidden");
+    setTimeout(()=>$("trialFood").focus(),50);
+  }
+  function closeTrialModal() { $("trialModal").classList.add("hidden"); }
+  function openFoodModal() { $("foodForm").reset(); $("foodModal").classList.remove("hidden"); setTimeout(()=>$("foodName").focus(),50); }
+  function closeFoodModal() { $("foodModal").classList.add("hidden"); }
+  function saveTrial(event) {
+    event.preventDefault();
+    const name=$("trialFood").value.trim(), date=$("trialDate").value;
+    if(!name||!date) { showToast("Nama makanan dan tanggal wajib diisi."); return; }
+    const food=upsertFood(name);
+    const id=$("trialId").value;
+    const existing=id ? state.trials.find(t=>t.id===id) : null;
+    const record={
+      id:existing?.id || uid("trial"),foodId:food.id,date,
+      mealTime:$("trialTime").value,status:$("trialStatus").value,
+      preparation:$("trialPreparation").value.trim(),feedingResponse:$("trialResponse").value,
+      observations:$("trialObservation").value.trim(),followUp:$("trialFollowup").value.trim(),
+      createdAt:existing?.createdAt || new Date().toISOString(),updatedAt:new Date().toISOString()
+    };
+    if(existing) Object.assign(existing,record); else state.trials.push(record);
+    selectedDate=date; viewMonth=new Date(parseDate(date).getFullYear(),parseDate(date).getMonth(),1);
+    saveState(); closeTrialModal(); renderAll(); showView(activeView);
+    showToast(existing ? "Catatan percobaan diperbarui." : "Percobaan berhasil disimpan.");
+  }
+  function deleteTrial(id) {
+    const trial=state.trials.find(t=>t.id===id); if(!trial)return;
+    if(!confirm(`Hapus catatan percobaan ${getFoodName(trial.foodId)} tanggal ${shortDate(trial.date)}?`))return;
+    state.trials=state.trials.filter(t=>t.id!==id); saveState(); renderAll(); showToast("Catatan dihapus.");
+  }
+  function completeTrial(id) {
+    const trial=state.trials.find(t=>t.id===id); if(!trial)return;
+    trial.status="completed"; trial.updatedAt=new Date().toISOString(); saveState(); renderAll(); showToast("Status diperbarui. Tambahkan pengamatan lewat Edit catatan.");
+  }
+  function duplicateTrial(id) {
+    const trial=state.trials.find(t=>t.id===id); if(!trial)return;
+    const copy={...trial,id:"",date:selectedDate>=toISODate(new Date())?selectedDate:toISODate(new Date()),status:"planned",feedingResponse:"",observations:"",followUp:"",createdAt:"",updatedAt:""};
+    openTrialModal(null,{foodName:getFoodName(trial.foodId),date:copy.date,mealTime:trial.mealTime});
+    $("trialPreparation").value=trial.preparation||"";
+  }
+  function saveFood(event) {
+    event.preventDefault();
+    const name=$("foodName").value.trim(); if(!name)return;
+    const food=upsertFood(name,$("foodCat").value,$("foodNotes").value.trim());
+    saveState(); closeFoodModal(); renderAll(); showToast(`${food.name} tersimpan di katalog.`);
+  }
+  function bindEvents() {
+    $("headerDate").textContent=new Intl.DateTimeFormat("id-ID",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
+    ["addTrialTop","addTrialCalendar","addTrialHistory","addTrialSelected"].forEach(id=>$(id).addEventListener("click",()=>openTrialModal(null,{date:selectedDate})));
+    $("prevMonth").addEventListener("click",()=>{viewMonth=new Date(viewMonth.getFullYear(),viewMonth.getMonth()-1,1);renderCalendar();});
+    $("nextMonth").addEventListener("click",()=>{viewMonth=new Date(viewMonth.getFullYear(),viewMonth.getMonth()+1,1);renderCalendar();});
+    $("todayMonth").addEventListener("click",()=>{viewMonth=new Date();selectedDate=toISODate(new Date());renderCalendar();renderSelectedTrials();});
+    $("calendarGrid").addEventListener("click",event=>{const day=event.target.closest("[data-date]");if(!day)return;selectedDate=day.dataset.date;const date=parseDate(selectedDate);viewMonth=new Date(date.getFullYear(),date.getMonth(),1);renderCalendar();renderSelectedTrials();});
+    $("trialForm").addEventListener("submit",saveTrial);
+    $("closeTrial").addEventListener("click",closeTrialModal);$("cancelTrial").addEventListener("click",closeTrialModal);
+    $("trialModal").addEventListener("click",event=>{if(event.target===$("trialModal"))closeTrialModal();});
+    $("foodForm").addEventListener("submit",saveFood);$("closeFood").addEventListener("click",closeFoodModal);$("cancelFood").addEventListener("click",closeFoodModal);
+    $("foodModal").addEventListener("click",event=>{if(event.target===$("foodModal"))closeFoodModal();});
+    $("addFoodBtn").addEventListener("click",openFoodModal);
+    $("historySearch").addEventListener("input",renderHistory);$("historyStatus").addEventListener("change",renderHistory);$("historyMonth").addEventListener("change",renderHistory);
+    $("foodSearch").addEventListener("input",renderFoods);$("foodCategory").addEventListener("change",renderFoods);
+    document.querySelectorAll("[data-go]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.go==="history"?"historyView":"dashboardView")));
+    document.querySelectorAll(".bottom-nav button").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view,btn.dataset.scroll||null)));
+    document.addEventListener("click",event=>{
+      const edit=event.target.closest("[data-edit-trial]"); if(edit){const t=state.trials.find(x=>x.id===edit.dataset.editTrial);if(t)openTrialModal(t);return;}
+      const del=event.target.closest("[data-delete-trial]"); if(del){deleteTrial(del.dataset.deleteTrial);return;}
+      const done=event.target.closest("[data-complete-trial]"); if(done){completeTrial(done.dataset.completeTrial);return;}
+      const dup=event.target.closest("[data-duplicate-trial]"); if(dup){duplicateTrial(dup.dataset.duplicateTrial);return;}
+      const plan=event.target.closest("[data-plan-food]"); if(plan){const food=state.foods.find(f=>f.id===plan.dataset.planFood);if(food)openTrialModal(null,{foodName:food.name,date:selectedDate});return;}
+      const hist=event.target.closest("[data-food-history]"); if(hist){const food=state.foods.find(f=>f.id===hist.dataset.foodHistory);if(food){showView("historyView");$("historySearch").value=food.name;renderHistory();}return;}
+    });
+    document.addEventListener("keydown",event=>{if(event.key==="Escape"){closeTrialModal();closeFoodModal();}});
+  }
+  function migrateOldData() {
+    if(localStorage.getItem(STORAGE_KEY)) return;
+    // Do not delete old keys: the previous app's data remains untouched.
+    try {
+      const oldTried=JSON.parse(localStorage.getItem("mpasiBuddyTried")||"[]");
+      if(Array.isArray(oldTried)) oldTried.forEach((name,index)=>{
+        if(typeof name!=="string")return;
+        const food=upsertFood(name,"Lainnya","");
+        state.trials.push({id:`migrated_${index}_${uid()}`,foodId:food.id,date:toISODate(new Date()),mealTime:"other",status:"completed",preparation:"",feedingResponse:"",observations:"Diimpor dari daftar makanan lama. Tanggal asli tidak tersedia.",followUp:"",createdAt:new Date().toISOString()});
+      });
+      if(state.foods.length||state.trials.length) saveState();
+    } catch(error) { console.warn("Migrasi data lama dilewati:",error); }
+  }
+  migrateOldData();
+  bindEvents();
+  renderAll();
+})();
 </script>
 </body>
 </html>
